@@ -1,18 +1,21 @@
 # Hack day - JUnit5 - Tam Pham
 
 ### Table of contents:
-<ol>
-    <li><a href="#title_1">Overview about UnitTest</a></li>
-    <li><a href="#title_2">Difference between JUnit5 and JUnit4</a></li>
-    <li><a href="#title_3">UTD, UTS, PICT, CSV source, Stream Source</a></li>
-    <li><a href="#title_4">Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</a></li>
-</ol>
+<ul style="list-style: none">
+    <li><a href="#title_1">1. Overview about UnitTest</a></li>
+    <li><a href="#title_2">2. Difference between JUnit5 and JUnit4</a></li>
+    <li><a href="#title_3">3. UTD, UTS, PICT, CSV source, Stream Source</a></li>
+    <li><a href="#title_4">4. Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</a></li>
+    <li><a href="#title_5">5. Reference documents</a></li>
+</ul>
 
 <h2 id="title_1">1. Overview about UnitTest</h2>
 
 ### About testing flow:
 
-<img src="https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true" alt="tam pham hack day">
+<div class="width: 100%;display: flex;justify-content: center;">
+    <img src="https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true" alt="tam pham hack day">
+</div>
 <br/>
 
 <p><i><b>Note: </b> This document will focus on JUnit5 's function and other concepts about testing, coverage, etc. would be the most basic </i></p>
@@ -44,7 +47,6 @@ used for assistance in UT.
 Generally, the software goes under four level of testing: UT, IT, ST, and AT but sometimes
 due to time consumption software engineers does minimal UT but skipping of UT may lead to higher defects during IT, ST, AT 
 or even during Beta testing which takes place after the completion of software application.
-
 
 Some crucial reasons are listed below:
 <ul>
@@ -138,7 +140,7 @@ Let's create test method with JUnit 4:
     }
 ```
 We have 7 cases in definition and need to create 7 test method for them. And then, let's try JUnit5 and @ParameterizedTest.
-For detailed, you can see in `src/test/java/com/optimizely/junit5hackday/ExampleServiceTest.java`
+For detailed, see at `src/test/java/com/optimizely/junit5hackday/ExampleServiceTest.java`
 ```java
     @ParameterizedTest
     @CsvSource({
@@ -163,7 +165,16 @@ OK! It is look like more convenience than using JUnit4, right?
 However, we need to create parameter source for test. Param source can be csv source, stream source or etc. But we need create a test resource before.
 With csv source, we need to create UTD (Unit testing design) file and use PICT tool 
 (<a href="https://github.com/microsoft/pict/releases/" target="_blank">Download PICT</a>) to generate to UTS (Unit testing specification) file
+
 For example:
 
 
 <h2 id="title_4">4. Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</h2>
+
+<h2 id="title_5">5. Reference documents</h2>
+<ul>
+    <li><a href="https://www.javatpoint.com/unit-testing" target="_blank">What is Unit Testing?</a></li>
+    <li><a href="https://howtodoinjava.com/junit5/junit-5-vs-junit-4/" target="_blank">Difference between JUnit 5 an JUnit 4</a></li>
+    <li><a href="https://www.javatpoint.com/types-of-unit-testing" target="_blank">Types of Unit Testing</a></li>
+    <li><a href="https://github.com/microsoft/pict/blob/main/doc/pict.md" target="_blank">Pairwise Independent Combinatorial Testing tool</a></li>
+</ul>
