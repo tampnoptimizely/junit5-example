@@ -1,6 +1,6 @@
-## Hack day - JUnit5 - Tam Pham
+# Hack day - JUnit5 - Tam Pham
 
-## Table of contents:
+### Table of contents:
 <ul style="list-style: circle;">
     <li><a href="#title_1">1. Overview about UnitTest</a></li>
     <li><a href="#title_2">2. Difference between JUnit5 and JUnit4</a></li>
@@ -9,8 +9,9 @@
 </ul>
 
 <h2 id="title_1">1. Overview about UnitTest</h2>
+
 ### About testing flow:
-<br/>
+
 <img src="https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true" alt="tam pham hack day">
 <br/>
 
