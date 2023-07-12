@@ -73,7 +73,7 @@ With Parameterized test, this test method will be executed so many times depend 
 
 For example:
 We have a method want to test:
-```
+```java
     public String showHttpStatus(Integer statusCode) {
         if (Objects.isNull(statusCode)) {
             throw new NullPointerException();
@@ -94,7 +94,7 @@ We can define some test case for this method:
 ```
 
 Let's create test method with JUnit 4:
-```
+```java
     @Test(expected = NullPointerException.class)
     public void testShowHttpStatus_inputNull() {
         exampleService.showHttpStatus(null);
@@ -137,7 +137,7 @@ Let's create test method with JUnit 4:
 ```
 We have 7 cases in definition and need to create 7 test method for them. And then, let's try JUnit5 and @ParameterizedTest.
 For detailed, you can see in `src/test/java/com/optimizely/junit5hackday/ExampleServiceTest.java`
-```
+```java
     @ParameterizedTest
     @CsvSource({
             ", NullPointerException",
