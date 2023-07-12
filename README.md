@@ -13,7 +13,7 @@
 
 ### About testing flow:
 
-<div class="width: 100%;display: flex;justify-content: center;">
+<div style="width: 100%;display: flex;justify-content: center;">
     <img src="https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true" alt="tam pham hack day">
 </div>
 <br/>
