@@ -10,7 +10,7 @@
 
 <h2 id="title_1">1. Overview about UnitTest</h2>
 ### About testing flow:
-![](https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true)
+<img src="https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true" alt="tam pham hack day">
 <br/>
 
 <p><i><b>Note: </b> This document will focus on JUnit5 's function and other concepts about testing, coverage, etc. would be the most basic </i></p>
