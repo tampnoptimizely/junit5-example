@@ -10,7 +10,7 @@
 
 <h2 id="title_1">1. Overview about UnitTest</h2>
 ### About testing flow:
-![](doc/images/testing_flow.png)
+![](https://github.com/tampnoptimizely/junit5-hackday/blob/master/docs/images/testing_flow.png?raw=true)
 <br/>
 
 <p><i><b>Note: </b> This document will focus on JUnit5 's function and other concepts about testing, coverage, etc. would be the most basic </i></p>
@@ -83,7 +83,7 @@ We have a method want to test:
     }
 ```
 We can define some test case for this method:
-```
+```text
 1. If statusCode = null -> Throw NullPointerException()
 2. If statusCode = 200  -> return "OK"
 3. If statusCode = 100  -> return "CONTINUE"
