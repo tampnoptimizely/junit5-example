@@ -4,7 +4,7 @@
 <ul style="list-style: none">
     <li><a href="#title_1">1. Overview about UnitTest</a></li>
     <li><a href="#title_2">2. Difference between JUnit5 and JUnit4</a></li>
-    <li><a href="#title_3">3. UTD, UTS, PICT, CSV source, Stream Source</a></li>
+    <li><a href="#title_3">3. UTD, UTS, PICT, CSV source, Method Source</a></li>
     <li><a href="#title_4">4. Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</a></li>
     <li><a href="#title_5">5. Reference documents</a></li>
 </ul>
@@ -71,7 +71,7 @@ JUnit 5 aims to adapt the Java8 style of coding and to be more robust and flexib
 
 Other differences in architecture, required, assertions, assumptions, etc. Following <a href="https://howtodoinjava.com/junit5/junit-5-vs-junit-4/" target="_blank">More differences between JUnit 5 and JUnit 4</a>
 
-<h2 id="title_3">3. UTD, UTS, PICT, CSV source, Stream Source</h2>
+<h2 id="title_3">3. UTD, UTS, PICT, CSV source, Method Source</h2>
 In JUnit 4, foreach test case need to create a test method. However, with JUnit 5, we can execute so many test case with only test method by using @ParameterizedTest instead of @Test. 
 With Parameterized test, this test method will be executed so many times depend on testing resource input. Each test param will be run as an independent test case. 
 
@@ -162,12 +162,81 @@ For detailed, see at `src/test/java/com/optimizely/junit5hackday/ExampleServiceT
     }
 ```
 OK! It is look like more convenience than using JUnit4, right?
-However, we need to create parameter source for test. Param source can be csv source, stream source or etc. But we need create a test resource before.
-With csv source, we need to create UTD (Unit testing design) file and use PICT tool 
-(<a href="https://github.com/microsoft/pict/releases/" target="_blank">Download PICT</a>) to generate to UTS (Unit testing specification) file
+However, we need to create parameter source for test. Param source can be csv source, method source or etc. But we need create a test resource before.
+With csv source, we need to create UTD (Unit testing design) file and then use PICT tool to generate to UTS (Unit testing specification) file.
 
-For example:
+_Download PICT tool for Window <a href="https://github.com/microsoft/pict/releases/" target="_blank">PICT.exe</a> or execute this cmd to download for MacOS:_
+```shell
+brew install pict
+```
 
+For this test spec, we can create UTD file similar:
+```textmate
+# Input
+CODE: null, 100, 200, 302, 400, 500, 600
+
+# Output
+STATUS:  NullPointerException, OK, CONTINUE, FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR, IllegalArgumentException
+
+IF [CODE] = "null" THEN [STATUS] = "NullPointerException";
+IF [CODE] = "100" THEN [STATUS] = "CONTINUE";
+IF [CODE] = "200" THEN [STATUS] = "OK";
+IF [CODE] = "302" THEN [STATUS] = "FOUND";
+IF [CODE] = "400" THEN [STATUS] = "BAD_REQUEST";
+IF [CODE] = "500" THEN [STATUS] = "INTERNAL_SERVER_ERROR";
+IF [CODE] = "600" THEN [STATUS] = "IllegalArgumentException";
+```
+UTD(Unit testing design) file will encompass all cases for this test, and then we use PICT to generate to UTS file (<a href="https://github.com/microsoft/pict/blob/main/doc/pict.md" target="_blank">PICT syntax</a>)
+
+Example on Mac:
+```shell
+pict UTD/ExampleServiceUTD.txt > UTS/ExampleServiceUTS.txt
+```
+
+Example on Window:
+```shell
+pict.exe UTD/ExampleServiceUTD.txt > UTS/ExampleServiceUTS.txt
+```
+Here is UTS output file:
+```textmate
+CODE	STATUS
+null	NullPointerException
+400	BAD_REQUEST
+200	OK
+100	CONTINUE
+500	INTERNAL_SERVER_ERROR
+600	IllegalArgumentException
+302	FOUND
+```
+And now, we can customize this UTS file to have CSV source for the UT method in JUnit5. If we don't want to create UTD, UTS, run PICT, etc. 
+Because it has so many step and inconvenience, we are able to use another way, @MethodSource. 
+
+```java
+    @ParameterizedTest
+    @MethodSource(value = "showHttpStatusTestData")
+    void showHttpStatusTest_methodSoure(Integer statusCode, String expectedResult) {
+        try {
+            String status = exampleService.showHttpStatus(statusCode);
+            Assertions.assertEquals(expectedResult, status);
+        } catch (Exception ex) {
+            Assertions.assertEquals(expectedResult, ex.getClass().getSimpleName());
+        }
+    }
+    
+    private Stream<Arguments> showHttpStatusTestData() {
+        return Stream.of(
+                Arguments.of(null, "NullPointerException"),
+                Arguments.of(200, "OK"),
+                Arguments.of(100, "CONTINUE"),
+                Arguments.of(302, "FOUND"),
+                Arguments.of(400, "BAD_REQUEST"),
+                Arguments.of(500, "INTERNAL_SERVER_ERROR"),
+                Arguments.of(600, "IllegalArgumentException")
+        );
+    }
+```
+Done, it is look like easier than using CSV Source (^-^). Besides, we have some other ways as: CsvFileSource, ArgumentsSource, 
+but I think MethodSource is the most convenience than others.
 
 <h2 id="title_4">4. Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</h2>
 

@@ -1,0 +1,13 @@
+# Input
+CODE: null, 100, 200, 302, 400, 500, 600
+
+# Output
+STATUS:  NullPointerException, OK, CONTINUE, FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR, IllegalArgumentException
+
+IF [CODE] = "null" THEN [STATUS] = "NullPointerException";
+IF [CODE] = "100" THEN [STATUS] = "CONTINUE";
+IF [CODE] = "200" THEN [STATUS] = "OK";
+IF [CODE] = "302" THEN [STATUS] = "FOUND";
+IF [CODE] = "400" THEN [STATUS] = "BAD_REQUEST";
+IF [CODE] = "500" THEN [STATUS] = "INTERNAL_SERVER_ERROR";
+IF [CODE] = "600" THEN [STATUS] = "IllegalArgumentException";
