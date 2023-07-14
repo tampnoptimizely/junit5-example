@@ -2,14 +2,14 @@
 
 ### Table of contents:
 <ul style="list-style: none">
-    <li><a href="#title_1">1. Overview about UnitTest</a></li>
+    <li><a href="#title_1">1. Overview about Unit Testing</a></li>
     <li><a href="#title_2">2. Difference between JUnit5 and JUnit4</a></li>
-    <li><a href="#title_3">3. UTD, UTS, PICT, CSV source, Method Source</a></li>
-    <li><a href="#title_4">4. Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</a></li>
+    <li><a href="#title_3">3. UTD, UTS, PICT, CSV Source, Method Source</a></li>
+    <li><a href="#title_4">4. Update existing project to JUnit5</a></li>
     <li><a href="#title_5">5. Reference documents</a></li>
 </ul>
 
-<h2 id="title_1">1. Overview about UnitTest</h2>
+<h2 id="title_1">1. Overview about Unit Testing</h2>
 
 ### About testing flow:
 
@@ -56,7 +56,7 @@ Some crucial reasons are listed below:
     <li>It helps with code re-usability by migrating code and test cases.</li>
 </ul>
 
-### Types of UnitTesting
+### Types of Unit Testing
 In UT, each unit of code is tested independently to ensure that it behaves as expected, without any dependency on other units. Unit tests typically focus on a small piece of 
 functionality and are automated, allowing for efficient and repeatable testing. There are several types of unit testing, each with its own advantages 
 and use cases. But we usually know about 3 types of UT: white-box testing, black-box testing, and gray-box testing.
@@ -71,13 +71,15 @@ JUnit 5 aims to adapt the Java8 style of coding and to be more robust and flexib
 
 Other differences in architecture, requirements, assertions, assumptions, etc. Following <a href="https://howtodoinjava.com/junit5/junit-5-vs-junit-4/" target="_blank">More differences between JUnit 5 and JUnit 4</a>
 
-<h2 id="title_3">3. UTD, UTS, PICT, CSV source, Method Source</h2>
+<h2 id="title_3">3. UTD, UTS, PICT, CSV Source, Method Source</h2>
 In JUnit 4, each test case needs to create a test method. However, with JUnit 5, we can execute so many test cases with only a test method by using @ParameterizedTest instead of @Test. 
 With the Parameterized test, this test method will be executed so many times depending on testing resource input. Each test param will be run as an independent test case. 
 
 For example:
 We have a method want to test:
 ```java
+@Service
+public class ExampleService {
     public String showHttpStatus(Integer statusCode) {
         if (Objects.isNull(statusCode)) {
             throw new NullPointerException();
@@ -85,6 +87,7 @@ We have a method want to test:
         HttpStatus httpStatus = HttpStatus.valueOf(statusCode);
         return httpStatus.name();
     }
+}
 ```
 We can define some test cases for this method:
 ```text
@@ -99,6 +102,8 @@ We can define some test cases for this method:
 
 Let's create a test method with JUnit 4:
 ```java
+@RunWith(JUnit4.class)
+public class ExampleServiceTestJUnit4 {
     @Test(expected = NullPointerException.class)
     public void testShowHttpStatus_inputNull() {
         exampleService.showHttpStatus(null);
@@ -138,10 +143,18 @@ Let's create a test method with JUnit 4:
     public void testShowHttpStatus_inputInvalid() {
         exampleService.showHttpStatus(600);
     }
+}
 ```
 We have 7 cases in definition and need to create 7 test methods for them. And then, let's try JUnit5 and @ParameterizedTest.
 For details, see `src/test/java/com/optimizely/junit5hackday/ExampleServiceTest.java`
 ```java
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class ExampleServiceTest {
+
+    @Autowired
+    ExampleService exampleService;
+
     @ParameterizedTest
     @CsvSource({
             ", NullPointerException",
@@ -160,6 +173,7 @@ For details, see `src/test/java/com/optimizely/junit5hackday/ExampleServiceTest.
             Assertions.assertEquals(expectedResult, ex.getClass().getSimpleName());
         }
     }
+}
 ```
 OK! It looks more convenient than using JUnit4, right?
 However, we need to create a parameter source for the test. Param source can be csv source, method source or etc. But we need to create a test resource before.
@@ -212,9 +226,16 @@ And now, we can customize this UTS file to have a CSV source for the UT method i
 Because it has so many steps and inconveniences, we are able to use another way, @MethodSource. 
 
 ```java
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class ExampleServiceTest {
+
+    @Autowired
+    ExampleService exampleService;
+
     @ParameterizedTest
     @MethodSource(value = "showHttpStatusTestData")
-    void showHttpStatusTest_methodSoure(Integer statusCode, String expectedResult) {
+    void showHttpStatusTest_methodSource(Integer statusCode, String expectedResult) {
         try {
             String status = exampleService.showHttpStatus(statusCode);
             Assertions.assertEquals(expectedResult, status);
@@ -222,7 +243,6 @@ Because it has so many steps and inconveniences, we are able to use another way,
             Assertions.assertEquals(expectedResult, ex.getClass().getSimpleName());
         }
     }
-    
     private Stream<Arguments> showHttpStatusTestData() {
         return Stream.of(
                 Arguments.of(null, "NullPointerException"),
@@ -234,11 +254,104 @@ Because it has so many steps and inconveniences, we are able to use another way,
                 Arguments.of(600, "IllegalArgumentException")
         );
     }
+}
 ```
 Done, it looks like easier than using CSV Source (^-^). Besides, we have some other ways as CsvFileSource, ArgumentsSource, 
 but I think MethodSource is the most convenience than others.
 
-<h2 id="title_4">4. Mockito in JUnit5, BeforeAll, AfterAll, BeforeEach, AfterEach</h2>
+<h2 id="title_4">4. Update existing project to JUnit5</h2>
+Currently, we have a JUnit4 testing class:
+```java
+@RunWith(JUnit4.class)
+public class TestParserJ4 {
+
+    @Test
+    public void testMoneyDollar()
+    {
+        final CompiledExpression e = Parser.parse("$425.80");
+        final Literal l = (Literal) e;
+        assertEquals(425.80d, l.getDoubleValue());
+        assertEquals("$", l.getCurrency());
+        assertEquals(LiteralType.MONEY, l.getType());
+    }
+
+    @Test
+    public void testMoneyPounds()
+    {
+        final Literal l = (Literal) Parser.parse("£425.80");
+        assertEquals(425.80d, l.getDoubleValue());
+        assertEquals("£", l.getCurrency());
+        assertEquals(LiteralType.MONEY, l.getType());
+    }
+
+    @Test
+    public void testMoneyPoundsWithDblQuotes()
+    {
+        final Literal l = (Literal) Parser.parse("\"£425.80\"");
+        assertNotNull(l);
+        assertEquals("£", l.getCurrency());
+        assertEquals(425.80d, l.getDoubleValue());
+        assertEquals(LiteralType.MONEY, l.getType());
+    }
+
+    @Test
+    public void testMoneyEuro()
+    {
+        final Literal l = (Literal) Parser.parse("€425.80");
+        assertEquals(425.80d, l.getDoubleValue());
+        assertEquals("€", l.getCurrency());
+        assertEquals(LiteralType.MONEY, l.getType());
+    }
+}
+```
+Let's install JUnit 5 in this project and try with it. Maven dependencies (for more dependencies <a href="https://mvnrepository.com/" target="_blank">mvnrepository</a>):
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.9.3</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.3.1</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>5.3.1</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
+```java
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class TestParserJ5 {
+
+    @ParameterizedTest
+    @MethodSource(value = "testParseMoneyData")
+    void testParseMoney(String moneyStr, double expectedMoney, String expectedCur) {
+        final Literal literal = (Literal) Parser.parse(moneyStr);
+        assertNotNull(literal);
+        assertEquals(expectedMoney, literal.getDoubleValue());
+        assertEquals(expectedCur, literal.getCurrency());
+        assertEquals(LiteralType.MONEY, literal.getType());
+    }
+
+    private Stream<Arguments> testParseMoneyData() {
+        return Stream.of(
+                Arguments.of("$425.80", 425.80d, "$"),
+                Arguments.of("€425.80", 425.80d, "€"),
+                Arguments.of("£425.80", 425.80d, "£"),
+                Arguments.of("\"£425.80\"", 425.80d, "£")
+        );
+    }
+}
+```
+An additional, we can completely use both JUnit4 and JUnit5 in the same project.
 
 <h2 id="title_5">5. Reference documents</h2>
 <ul>

@@ -40,7 +40,7 @@ class ExampleServiceTest {
 
     @ParameterizedTest
     @MethodSource(value = "showHttpStatusTestData")
-    void showHttpStatusTest_methodSoure(Integer statusCode, String expectedResult) {
+    void showHttpStatusTest_methodSource(Integer statusCode, String expectedResult) {
         try {
             String status = exampleService.showHttpStatus(statusCode);
             Assertions.assertEquals(expectedResult, status);
@@ -59,5 +59,4 @@ class ExampleServiceTest {
                 Arguments.of(600, "IllegalArgumentException")
         );
     }
-
 }
